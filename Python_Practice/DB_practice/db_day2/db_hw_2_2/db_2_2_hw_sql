@@ -1,0 +1,41 @@
+CREATE TABLE zoo (
+  name TEXT NOT NULL,
+  eat TEXT NOT NULL,
+  weight INT NOT NULL,
+  height INT,
+  age INT
+);
+
+-- 1) 
+-- INSERT INTO zoo VALUES 
+-- (5, 180, 210, 'gorilla', 'omnivore');
+
+-- 원인 : 컬럼의 목록을 생략하였고(필수는 아님.), 컬럼 목록의 순서와 컬럼의 순서가 다름.(데이터 타입의 오류 발생.)
+-- 수정 : 컬럼의 순서와 데이터의 순서를 맞춘다.
+INSERT INTO zoo VALUES 
+('gorilla', 'omnivore', 180, 210, 5); 
+
+
+
+
+-- 2)
+-- INSERT INTO zoo (rowid, name, eat, weight, age) VALUES
+-- (10,'dolphin', 'carnivore', 210, 3),
+-- (10, 'alligator', 'carnivore', 250, 50);
+
+-- 원인 : rowid 컬럼은 테이블에서 자동으로 관리되는 열로, 사용자가 직접 값을 할당해서는 안된다. 
+--        또한 두 개의 행에서 rowid 값이 같다.
+-- 수정 : rowid 컬럼에 해당하는 데이터를 쓰지 않는다.
+INSERT INTO zoo (name, eat, weight, age) VALUES
+('dolphin', 'carnivore', 210, 3),
+('alligator', 'carnivore', 250, 50);
+
+
+-- 3)
+-- INSERT INTO zoo (name, eat, age) VALUES
+-- ('dolphin', 'carnivore', 3);
+
+-- 원인 : weight 컬럼은 NOT NULL로 지정되어 있으나, 이 쿼리에서 값을 제공하지 않음.
+-- 수정 : weight 및 height 컬럼에도 값을 제공하거나, 기본값을 사용하도록 수정 (임의로 weight == 0, height == NULL 로 설정)
+INSERT INTO zoo (name, eat, weight, height, age) VALUES
+('dolphin', 'carnivore', 0, NULL, 3);

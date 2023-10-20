@@ -1,0 +1,6 @@
+CREATE TABLE contacts (
+  email TEXT NOT MULL UNIQUE,
+  name TEXT NOT NULL,
+  age INTEGER NOT NULL
+);
+

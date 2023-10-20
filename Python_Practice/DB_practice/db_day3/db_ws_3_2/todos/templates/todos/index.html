@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Todo</h1>
+<hr>
+<ul>
+  {% for todo in todos %}
+    <li>{{ todo.author }} - {{ todo.title }}
+      <form action="{% url 'todos:toggle_todo' todo.pk %}" method="POST" >
+        {% csrf_token %}
+        <button type="submit">
+          {% if todo.completed %}
+            취소하기
+          {% else %}
+            완료하기
+          {% endif %}
+        </button>
+      </form>
+      <form action="{% url 'todos:delete_todo' todo.pk %}" method="POST">
+        {% csrf_token %}
+        <button type="submit" name="delete">삭제하기</button>
+      </form>
+    </li>
+  {% empty %}
+    <p>작성된 글이 없습니다.</p>
+  {% endfor %}
+</ul>
+{% endblock content %}

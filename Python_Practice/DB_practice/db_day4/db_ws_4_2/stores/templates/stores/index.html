@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <h1>전체 편의점 목록</h1>
+  {% for store in stores %}
+    
+      <ul>
+        <a href="{% url "stores:detail" store.pk %}">
+          <li><label for="user">점장 : {{store.user}}</label></li>
+          <li><label for="address">주소 : {{store.address}}</label></li>
+        </a>
+        <hr>
+      </ul>
+  {% endfor %}
+</body>
+</html>

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+<h1>{{ user }}님의 프로필</h1>
+<hr>
+
+<h2>{{ user }}'s 게시글</h2>
+{% for article in user.article_set.all %}
+  <p>{{ article.title }}</p>
+{% endfor %}
+<hr>
+<h2>{{ user }}'s 좋아요한 게시글</h2>
+{% for article in user.like_articles.all %}
+  <p>{{ article.title }}</p>
+{% endfor %}
+<hr>
+<a href="{% url "articles:index" %}">back</a>
+{% endblock content %}
