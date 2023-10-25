@@ -1,0 +1,33 @@
+{% load bootstrap5 %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  {% bootstrap_css %}
+  <title>Document</title>
+</head>
+<body>
+  <div class="container">
+    {% if user.is_authenticated %}
+      <h1>Hello, {{user}}</h1>
+      <form action="{% url "accounts:logout" %}" method='POST'>
+        {% csrf_token %}
+        <input type="submit" value= 'Logout'>
+      </form>
+      <h1>Articles</h1>
+      <a href="{% url "articles:create" %}">[CREATE]</a>
+    {% else %}
+      <a href="{% url "accounts:login" %}">Login</a>
+      <h1>Articles</h1>
+      <a href="{% url "accounts:login" %}">[새 글을 작성하려면 로그인하세요.]</a>
+    {% endif %}
+
+    {% block content %}
+    {% endblock content %}
+  </div>
+  {% bootstrap_javascript %}
+</body>
+</html>
