@@ -31,7 +31,14 @@
         const imgTag = document.querySelector('img')
         imgTag.src = imgUrl
         const h2Tag = document.querySelector('h2')
-        h2Tag.style.display = 'none'
+
+        
+        // if (h2Tag) {
+        //   h2Tag.remove();  // 방법 1
+        // }
+        
+        h2Tag.style.display = 'none'   // 방법 2 
+
       })
       .catch((error) => {
         console.log(error)
