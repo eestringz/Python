@@ -116,7 +116,17 @@ def follow(request, user_pk):
             if person.followers.filter(pk=request.user.pk).exists():
             # if request.user in person.followers.all():
                 person.followers.remove(request.user)
+                isFollowed = False
             else:
                 person.followers.add(request.user)
-        return redirect('accounts:profile', person.username)
+                isFollowed = True
+            context = {
+                'isFollowed' : isFollowed,
+                'followers_count' : person.followers.count(),
+                'followings_count' : person.followings.count(),
+
+            }
+
+            return JsonResponse(context)
+        # return redirect('accounts:profile', person.username)
     return redirect('accounts:login')
