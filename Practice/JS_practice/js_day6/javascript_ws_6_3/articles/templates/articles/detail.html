@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>DETAIL</h2>
+  <h3>{{ article.pk }} 번째 글</h3>
+  <hr>
+  <p>제목 : {{ article.title }}</p>
+  <p>내용 : {{ article.content }}</p>
+  <p>작성시각 : {{ article.created_at }}</p>
+  <p>수정시각 : {{ article.updated_at }}</p>
+  <hr>
+  {% if user == article.user %}
+    <a href="{% url 'articles:update' article.pk %}">[UPDATE]</a>
+    <form action="{% url 'articles:delete' article.pk %}" method="POST">
+      {% csrf_token %}
+      <input type="submit" value="DELETE">
+    </form>
+  {% endif %}
+  <a href="{% url 'articles:index' %}">[back]</a>
+  <hr>
+  <h4>댓글 목록</h4>
+
+  <ul id="comment-list">
+    {% for comment in comments %}
+      <li>
+        {{ comment.user }} - {{ comment.content }}
+        {% if user == comment.user %}
+          <form action="{% url 'articles:comments_delete' article.pk comment.pk %}" method="POST" class="d-inline">
+            {% csrf_token %}
+            <input type="submit" value="DELETE">
+          </form>
+        {% endif %}
+      </li>
+      {% endfor %}
+  </ul>
+
+  <hr>
+  {% if request.user.is_authenticated %}
+    <form id="comment-form">
+      {% csrf_token %}
+      {{ comment_form }}
+      <input type="submit">
+    </form>
+  {% else %}
+    <a href="{% url 'accounts:login' %}">[댓글을 작성하려면 로그인하세요.]</a>
+  {% endif %}
+{% endblock content %}
+
+{% block script %}
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    const form = document.querySelector('#comment-form')
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value
+    const input = document.querySelector('[name=content]')
+
+    form.addEventListener('submit', function (event) {
+      event.preventDefault()
+
+      let data = new FormData()
+      data.append('content', input.value)   // input.value : 댓글 내용
+      // 자바스크립트에서 form 전송 동작이 필요한 경우 페이지 전환 없이 폼 데이터를 비동기로  제출 하고 싶을 때 new FromData() 를 사용하여 새로운 객체 생성
+      
+      axios({
+        method: 'post',
+        url: `http://127.0.0.1:8000/articles/{{article.pk}}/comments/`,
+        data,
+        headers: {
+          'X-CSRFToken': csrftoken}
+      })
+        .then(response => {
+          const { commentPk, articlePk } = response.data
+          // 변수명과 객체의 key값이 값으면 이와같이 변수 선언 가능
+          
+          const li = document.createElement('li')
+          li.innerHTML = `
+            {{ request.user.username }} - ${input.value}
+            <form action="/articles/${articlePk}/comments/${commentPk}/delete/ %}" method="POST" class="d-inline">
+              {% csrf_token %}
+              <input type="submit" value="DELETE">
+            </form>
+          `
+          const ul = document.querySelector('#comment-list')
+          ul.append(li)
+
+          input.value = ''      // 작성된 내용 초기화
+        })
+    })
+
+  </script>
+{% endblock script %}
