@@ -1,0 +1,76 @@
+{% block content %}
+<h1>{{ person.username }}님의 프로필</h1>
+
+{% with followings=person.followings.all followers=person.followers.all %}
+  <div>
+    <div>
+      팔로잉 : <span id="followings-count">{{ followings|length }}</span>
+      팔로워 : <span id="followers-count">{{ followers|length }}</span>
+    </div>
+    {% if request.user != person %}
+      <div>
+        <form id='follow-form' data-user-id="{{person.pk}}">
+          {% csrf_token %}
+          {% if user in followers %}
+            <button>언팔로우</button>
+          {% else %}
+            <button>팔로우</button>
+          {% endif %}
+        </form>
+      </div>
+    {% endif %}
+  </div>
+{% endwith %}
+{% endblock %}
+
+{% block script %}
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    // 1. form 요소 선택
+    const formTag = document.querySelector('#follow-form')
+    // 6. csrf token value 값 선택
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value
+    
+    // 2. 이벤트 리스너 부착
+    formTag.addEventListener('submit', function (event) {
+      // 3. submit 이벤트 기본 동작 취소
+      event.preventDefault()
+
+      // 5. form 요소에 지정한 data 속성에  접근
+      const userId = formTag.dataset.userId
+        
+      // 4. axios로 비동기적 팔로우/언팔로우 요청
+      axios({
+        url : `http://127.0.0.1:8000/accounts/${userId}/follow/`,
+        method : "post",
+        headers: {'X-CSRFToken': csrftoken},
+      })
+      .then((res) => {
+        console.log(res.data)
+        // 7. django 에서 보낸 follow 여부를 알 수 있는 변수를 저장
+        const isFollowed = res.data.is_followed
+
+        // 8. 팔로우 버튼 선택
+        const followBtn = document.querySelector('button')
+
+        // 9. 팔로우 버튼 토글
+        if (isFollowed === true) {
+          followBtn.value = 'Unfollow'
+        } else {
+          followBtn.value = 'Follow'
+        }
+
+        // 10. 팔로워/팔로잉 수 조작
+        const followingsCountTag = document.querySelector("#followings-count")
+        const followersCountTag = document.querySelector("#followers-count")
+
+        followingsCountTag.textContent = res.data.followings_count
+        followersCountTag.textContent = res.data.followers_count
+      })  
+      .catch((error) => {
+        console.error(error);
+      });
+      
+    })
+  </script>
+{% endblock script %}
